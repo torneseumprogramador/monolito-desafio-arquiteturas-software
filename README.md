@@ -228,7 +228,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ## 👨‍💻 Autor
 
 **Desafio Arquitetura**
-- GitHub: [@seu-usuario](https://github.com/seu-usuario)
+- GitHub: [@torneseumprogramador](https://github.com/torneseumprogramador)
 
 ## 🎓 Torne-se um Programador
 

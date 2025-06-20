@@ -83,9 +83,7 @@ Uma aplicação web completa para cadastro e gerenciamento de produtos, desenvol
    npm run dev
    ```
 
-## 📁 Estrutura do Projeto
-
-```
+## 📁 Estrutura do Projeto```
 produtos-app/
 ├── app.js                 # Arquivo principal da aplicação
 ├── package.json           # Dependências e scripts
@@ -232,6 +230,16 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 **Desafio Arquitetura**
 - GitHub: [@seu-usuario](https://github.com/seu-usuario)
 
+## 🎓 Torne-se um Programador
+
+O Torne-se um Programador é uma plataforma de ensino focada em desenvolvimento de software e arquitetura. O curso Desafio de Arquiteturas de Software faz parte do programa e tem como objetivo ensinar na prática os principais conceitos e padrões de arquitetura de software através de projetos reais.
+
+Acesse: https://www.torneseumprogramador.com.br/
+
+## 🔗 Repositório Original
+Este projeto faz parte do Desafio de Arquiteturas de Software e pode ser encontrado em:
+https://github.com/torneseumprogramador/monolito-desafio-arquiteturas-software
+
 ## 🙏 Agradecimentos
 
 - Bootstrap para o framework CSS
@@ -242,3 +250,4 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ---
 
 **Desenvolvido com ❤️ usando Node.js, Express, MySQL e Bootstrap** 
+

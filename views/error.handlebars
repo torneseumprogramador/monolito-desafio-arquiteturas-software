@@ -1,0 +1,30 @@
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Erro
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <i class="bi bi-emoji-frown display-1 text-muted mb-4"></i>
+                <h3 class="text-danger">{{message}}</h3>
+                
+                {{#if error}}
+                <div class="alert alert-light mt-3">
+                    <small class="text-muted">
+                        <strong>Detalhes:</strong><br>
+                        {{error.message}}
+                    </small>
+                </div>
+                {{/if}}
+                
+                <div class="mt-4">
+                    <a href="/produtos" class="btn btn-primary">
+                        <i class="bi bi-house"></i> Voltar ao Início
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

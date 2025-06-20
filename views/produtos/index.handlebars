@@ -1,0 +1,124 @@
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="h3">
+            <i class="bi bi-box-seam"></i> 
+            {{#if searchTerm}}
+                Resultados para: "{{searchTerm}}"
+            {{else}}
+                {{title}}
+            {{/if}}
+        </h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="/produtos/create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Produto
+        </a>
+    </div>
+</div>
+
+{{#if searchTerm}}
+<div class="row mb-3">
+    <div class="col">
+        <a href="/produtos" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar para todos os produtos
+        </a>
+    </div>
+</div>
+{{/if}}
+
+{{#if produtos.length}}
+<div class="row">
+    {{#each produtos}}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary">{{nome}}</h5>
+                <p class="card-text text-muted">{{descricao}}</p>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <small class="text-muted">Categoria:</small>
+                        <span class="badge bg-secondary">{{categoria}}</span>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Estoque:</small>
+                        <span class="badge {{#if (gt estoque 10)}}bg-success{{else if (gt estoque 0)}}bg-warning{{else}}bg-danger{{/if}}">
+                            {{estoque}} unidades
+                        </span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="text-success mb-0">R$ {{preco}}</h6>
+                    <div class="btn-group" role="group">
+                        <a href="/produtos/{{id}}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="/produtos/{{id}}/edit" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                onclick="confirmarExclusao({{id}}, '{{nome}}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <small>
+                    <i class="bi bi-calendar"></i> 
+                    Criado em: {{formatDate created_at}}
+                    {{#if updated_at}}
+                    <br><i class="bi bi-arrow-clockwise"></i> 
+                    Atualizado em: {{formatDate updated_at}}
+                    {{/if}}
+                </small>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{else}}
+<div class="text-center py-5">
+    <i class="bi bi-box-seam display-1 text-muted"></i>
+    <h3 class="text-muted mt-3">
+        {{#if searchTerm}}
+            Nenhum produto encontrado para "{{searchTerm}}"
+        {{else}}
+            Nenhum produto cadastrado
+        {{/if}}
+    </h3>
+    <p class="text-muted">
+        {{#if searchTerm}}
+            Tente buscar por outro termo ou <a href="/produtos">ver todos os produtos</a>
+        {{else}}
+            Comece cadastrando seu primeiro produto!
+        {{/if}}
+    </p>
+    {{#unless searchTerm}}
+    <a href="/produtos/create" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Cadastrar Primeiro Produto
+    </a>
+    {{/unless}}
+</div>
+{{/if}}
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o produto "<span id="produtoNome"></span>"?</p>
+                <p class="text-danger"><small>Esta ação não pode ser desfeita.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 

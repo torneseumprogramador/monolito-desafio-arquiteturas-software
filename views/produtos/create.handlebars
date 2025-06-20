@@ -1,0 +1,92 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> {{title}}
+                </h4>
+            </div>
+            <div class="card-body">
+                {{#if error}}
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> {{error}}
+                </div>
+                {{/if}}
+
+                <form method="POST" action="/produtos">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">
+                                    <i class="bi bi-tag"></i> Nome do Produto *
+                                </label>
+                                <input type="text" class="form-control" id="nome" name="nome" 
+                                       value="{{produto.nome}}" required>
+                                <div class="form-text">Nome completo do produto</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="categoria" class="form-label">
+                                    <i class="bi bi-collection"></i> Categoria *
+                                </label>
+                                <select class="form-select" id="categoria" name="categoria" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Eletrônicos" {{#if (eq produto.categoria "Eletrônicos")}}selected{{/if}}>Eletrônicos</option>
+                                    <option value="Vestuário" {{#if (eq produto.categoria "Vestuário")}}selected{{/if}}>Vestuário</option>
+                                    <option value="Casa e Jardim" {{#if (eq produto.categoria "Casa e Jardim")}}selected{{/if}}>Casa e Jardim</option>
+                                    <option value="Esportes" {{#if (eq produto.categoria "Esportes")}}selected{{/if}}>Esportes</option>
+                                    <option value="Livros" {{#if (eq produto.categoria "Livros")}}selected{{/if}}>Livros</option>
+                                    <option value="Alimentos" {{#if (eq produto.categoria "Alimentos")}}selected{{/if}}>Alimentos</option>
+                                    <option value="Outros" {{#if (eq produto.categoria "Outros")}}selected{{/if}}>Outros</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">
+                            <i class="bi bi-card-text"></i> Descrição
+                        </label>
+                        <textarea class="form-control" id="descricao" name="descricao" rows="3" 
+                                  placeholder="Descreva as características do produto...">{{produto.descricao}}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="preco" class="form-label">
+                                    <i class="bi bi-currency-dollar"></i> Preço *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" class="form-control" id="preco" name="preco" 
+                                           value="{{produto.preco}}" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="estoque" class="form-label">
+                                    <i class="bi bi-boxes"></i> Quantidade em Estoque
+                                </label>
+                                <input type="number" class="form-control" id="estoque" name="estoque" 
+                                       value="{{produto.estoque}}" min="0" required>
+                                <div class="form-text">Quantidade disponível</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/produtos" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Cadastrar Produto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -54,7 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validação de formulários
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
+        console.log('Form encontrado!', form);
         form.addEventListener('submit', function(e) {
+            console.log('Form submit disparado!', this);
             const requiredFields = form.querySelectorAll('[required]');
             let isValid = true;
 
@@ -86,7 +88,9 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             if (this.form && this.form.checkValidity()) {
                 this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processando...';
-                this.disabled = true;
+                setTimeout(() => {
+                    this.disabled = true;
+                }, 1000);
             }
         });
     });

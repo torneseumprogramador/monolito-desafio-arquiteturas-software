@@ -3,20 +3,6 @@
 # Script de setup para o Sistema de Produtos
 echo "🚀 Configurando Sistema de Cadastro de Produtos..."
 
-# Verificar se o Docker está instalado
-if ! command -v docker &> /dev/null; then
-    echo "❌ Docker não está instalado. Por favor, instale o Docker primeiro."
-    exit 1
-fi
-
-# Verificar se o Docker Compose está instalado
-if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose não está instalado. Por favor, instale o Docker Compose primeiro."
-    exit 1
-fi
-
-echo "✅ Docker e Docker Compose encontrados"
-
 # Criar arquivo .env se não existir
 if [ ! -f .env ]; then
     echo "📝 Criando arquivo .env..."
@@ -56,4 +42,4 @@ else
     echo "❌ Erro ao iniciar containers"
     echo "Verifique os logs com: docker-compose logs"
     exit 1
-fi 
+fi

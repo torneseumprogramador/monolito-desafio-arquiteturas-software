@@ -1,1 +1,1 @@
-ssh -i ~/Downloads/desafio-arquiteturas.pem ubuntu@54.233.48.41 -o ServerAliveInterval=60
+ssh -i ~/Downloads/desafio-arquiteturas.pem ubuntu@52.67.50.198 -o ServerAliveInterval=60

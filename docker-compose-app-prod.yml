@@ -6,7 +6,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DB_HOST=mysql
+      - DB_HOST=172.31.2.16
       - DB_USER=root
       - DB_PASSWORD=password
       - DB_NAME=produtos_db

@@ -11,9 +11,6 @@ services:
       - DB_PASSWORD=password
       - DB_NAME=produtos_db
       - DB_PORT=3306
-    depends_on:
-      mysql:
-        condition: service_healthy
     volumes:
       - ./uploads:/app/uploads
     restart: unless-stopped

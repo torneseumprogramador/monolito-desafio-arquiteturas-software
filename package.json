@@ -8,20 +8,27 @@
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["node", "express", "mysql", "bootstrap", "mvc"],
+  "keywords": [
+    "node",
+    "express",
+    "mysql",
+    "bootstrap",
+    "mvc"
+  ],
   "author": "Desafio Arquitetura",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "mysql2": "^3.6.5",
-    "express-handlebars": "^7.1.2",
     "body-parser": "^1.20.2",
-    "dotenv": "^16.3.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5"
+    "multer": "^2.0.1",
+    "mysql2": "^3.6.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
   }
-} 
+}

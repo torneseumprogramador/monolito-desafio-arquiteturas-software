@@ -1,4 +1,19 @@
 const Produto = require('../models/Produto');
+const path = require('path');
+const fs = require('fs');
+
+// Configuração do multer
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../public/uploads'));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname.replace(/\s+/g, '_'));
+  }
+});
+const upload = multer({ storage: storage });
 
 class ProdutoController {
   // Listar todos os produtos
@@ -30,7 +45,10 @@ class ProdutoController {
   static async create(req, res) {
     try {
       const { nome, descricao, preco, categoria, estoque } = req.body;
-      
+      let imagem = null;
+      if (req.file) {
+        imagem = '/uploads/' + req.file.filename;
+      }
       // Validação básica
       if (!nome || !preco || !categoria) {
         return res.render('produtos/create', {
@@ -39,8 +57,7 @@ class ProdutoController {
           error: 'Nome, preço e categoria são obrigatórios'
         });
       }
-
-      await Produto.create({ nome, descricao, preco, categoria, estoque });
+      await Produto.create({ nome, descricao, preco, categoria, estoque, imagem });
       res.redirect('/produtos?message=Produto criado com sucesso!');
     } catch (error) {
       res.render('produtos/create', {
@@ -73,7 +90,10 @@ class ProdutoController {
     try {
       const { nome, descricao, preco, categoria, estoque } = req.body;
       const id = req.params.id;
-      
+      let imagem = null;
+      if (req.file) {
+        imagem = '/uploads/' + req.file.filename;
+      }
       // Validação básica
       if (!nome || !preco || !categoria) {
         const produto = await Produto.findById(id);
@@ -83,8 +103,7 @@ class ProdutoController {
           error: 'Nome, preço e categoria são obrigatórios'
         });
       }
-
-      const success = await Produto.update(id, { nome, descricao, preco, categoria, estoque });
+      const success = await Produto.update(id, { nome, descricao, preco, categoria, estoque, imagem });
       if (success) {
         res.redirect('/produtos?message=Produto atualizado com sucesso!');
       } else {
@@ -154,4 +173,7 @@ class ProdutoController {
   }
 }
 
-module.exports = ProdutoController; 
+module.exports = {
+  ProdutoController,
+  upload
+}; 

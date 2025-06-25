@@ -21,10 +21,10 @@ class Produto {
 
   static async create(produtoData) {
     try {
-      const { nome, descricao, preco, categoria, estoque } = produtoData;
+      const { nome, descricao, preco, categoria, estoque, imagem } = produtoData;
       const [result] = await db.execute(
-        'INSERT INTO produtos (nome, descricao, preco, categoria, estoque) VALUES (?, ?, ?, ?, ?)',
-        [nome, descricao, preco, categoria, estoque]
+        'INSERT INTO produtos (nome, descricao, preco, categoria, estoque, imagem) VALUES (?, ?, ?, ?, ?, ?)',
+        [nome, descricao, preco, categoria, estoque, imagem]
       );
       return result.insertId;
     } catch (error) {
@@ -34,11 +34,16 @@ class Produto {
 
   static async update(id, produtoData) {
     try {
-      const { nome, descricao, preco, categoria, estoque } = produtoData;
-      const [result] = await db.execute(
-        'UPDATE produtos SET nome = ?, descricao = ?, preco = ?, categoria = ?, estoque = ?, updated_at = NOW() WHERE id = ?',
-        [nome, descricao, preco, categoria, estoque, id]
-      );
+      const { nome, descricao, preco, categoria, estoque, imagem } = produtoData;
+      let query = 'UPDATE produtos SET nome = ?, descricao = ?, preco = ?, categoria = ?, estoque = ?, updated_at = NOW()';
+      const params = [nome, descricao, preco, categoria, estoque];
+      if (imagem) {
+        query += ', imagem = ?';
+        params.push(imagem);
+      }
+      query += ' WHERE id = ?';
+      params.push(id);
+      const [result] = await db.execute(query, params);
       return result.affectedRows > 0;
     } catch (error) {
       throw new Error('Erro ao atualizar produto: ' + error.message);

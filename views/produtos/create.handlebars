@@ -13,7 +13,7 @@
                 </div>
                 {{/if}}
 
-                <form method="POST" action="/produtos">
+                <form method="POST" action="/produtos" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-8">
                             <div class="mb-3">
@@ -75,6 +75,14 @@
                                 <div class="form-text">Quantidade disponível</div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="imagem" class="form-label">
+                            <i class="bi bi-image"></i> Imagem do Produto
+                        </label>
+                        <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*">
+                        <div class="form-text">(Opcional) Imagem ilustrativa do produto</div>
                     </div>
 
                     <div class="d-flex justify-content-between">

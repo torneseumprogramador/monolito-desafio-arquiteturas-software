@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS produtos (
     preco DECIMAL(10,2) NOT NULL,
     categoria VARCHAR(100) NOT NULL,
     estoque INT DEFAULT 0,
+    imagem VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_categoria (categoria),

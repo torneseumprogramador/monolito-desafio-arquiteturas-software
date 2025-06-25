@@ -13,7 +13,20 @@
                 </div>
                 {{/if}}
 
-                <form method="POST" action="/produtos/{{produto.id}}">
+                <form method="POST" action="/produtos/{{produto.id}}" enctype="multipart/form-data">
+                    {{#if produto.imagem}}
+                    <div class="mb-3 text-center">
+                        <img src="{{produto.imagem}}" alt="Imagem do Produto" class="img-fluid rounded mb-2" style="max-height: 180px;">
+                        <div><small class="text-muted">Imagem atual</small></div>
+                    </div>
+                    {{/if}}
+                    <div class="mb-3">
+                        <label for="imagem" class="form-label">
+                            <i class="bi bi-image"></i> Nova Imagem (opcional)
+                        </label>
+                        <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*">
+                        <div class="form-text">Se enviar uma nova imagem, a anterior será substituída.</div>
+                    </div>
                     <div class="row">
                         <div class="col-md-8">
                             <div class="mb-3">

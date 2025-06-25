@@ -31,6 +31,9 @@
     {{#each produtos}}
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100 shadow-sm">
+            {{#if imagem}}
+            <img src="{{imagem}}" class="card-img-top" alt="Imagem do Produto" style="max-height: 180px; object-fit: contain; background: #f8f9fa;">
+            {{/if}}
             <div class="card-body">
                 <h5 class="card-title text-primary">{{nome}}</h5>
                 <p class="card-text text-muted">{{descricao}}</p>

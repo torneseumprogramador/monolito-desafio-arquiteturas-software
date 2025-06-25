@@ -40,3 +40,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 node_modules/
 .env
+
+# Uploads
+uploads/*
+!uploads/.gitkeep

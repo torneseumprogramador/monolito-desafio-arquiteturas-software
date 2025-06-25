@@ -5,16 +5,16 @@ git pull --force
 
 # Parar os containers existentes
 echo "🛑 Parando containers..."
-docker-compose down
+docker-compose -f docker-compose-app-prod.yml down
 
 # Reconstruir os containers
 echo "🔨 Reconstruindo containers..."
-docker-compose build
+docker-compose -f docker-compose-app-prod.yml build
 
 # Subir os containers
 echo "🚀 Iniciando containers..."
-docker-compose up -d
+docker-compose -f docker-compose-app-prod.yml up -d
 
 echo "✅ Containers reiniciados com sucesso!"
 
-docker-compose logs -f
+docker-compose -f docker-compose-app-prod.yml logs -f

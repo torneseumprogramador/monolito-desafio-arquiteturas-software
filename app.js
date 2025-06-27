@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Configuração do rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100 // limite de 100 requests por IP
+  max: 1000 // limite de 1000 requests por IP
 });
 
 // Middleware de segurança

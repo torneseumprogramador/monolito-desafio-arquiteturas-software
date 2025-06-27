@@ -1,5 +1,4 @@
 services:
-  # Aplicação Node.js
   app:
     build: .
     ports:
@@ -12,11 +11,11 @@ services:
       - DB_NAME=produtos_db
       - DB_PORT=3306
     volumes:
-      - ./uploads:/app/uploads
+      - /mnt/efs:/app/public/uploads
     restart: unless-stopped
     networks:
       - app-network
 
 networks:
   app-network:
-    driver: bridge 
+    driver: bridge

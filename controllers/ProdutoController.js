@@ -1,4 +1,5 @@
 const Produto = require('../models/Produto');
+const { S3Service, upload } = require('../services/S3Service');
 const path = require('path');
 const fs = require('fs');
 
@@ -13,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + '-' + file.originalname.replace(/\s+/g, '_'));
   }
 });
-const upload = multer({ storage: storage });
+const uploadMulter = multer({ storage: storage });
 
 class ProdutoController {
   // Listar todos os produtos
@@ -46,9 +47,21 @@ class ProdutoController {
     try {
       const { nome, descricao, preco, categoria, estoque } = req.body;
       let imagem = null;
-      if (req.file) {
-        imagem = '/uploads/' + req.file.filename;
+      
+      // Verificar se o S3 está configurado
+      if (!S3Service.isConfigured()) {
+        return res.render('produtos/create', {
+          title: 'Novo Produto',
+          produto: req.body,
+          error: 'Configuração do S3 não encontrada. Configure as variáveis de ambiente do AWS S3.'
+        });
       }
+
+      if (req.file) {
+        // Usar o serviço S3 para obter a URL do arquivo
+        imagem = S3Service.getFileUrl(req.file);
+      }
+
       // Validação básica
       if (!nome || !preco || !categoria) {
         return res.render('produtos/create', {
@@ -57,6 +70,7 @@ class ProdutoController {
           error: 'Nome, preço e categoria são obrigatórios'
         });
       }
+
       await Produto.create({ nome, descricao, preco, categoria, estoque, imagem });
       res.redirect('/produtos?message=Produto criado com sucesso!');
     } catch (error) {
@@ -91,9 +105,28 @@ class ProdutoController {
       const { nome, descricao, preco, categoria, estoque } = req.body;
       const id = req.params.id;
       let imagem = null;
-      if (req.file) {
-        imagem = '/uploads/' + req.file.filename;
+
+      // Verificar se o S3 está configurado
+      if (!S3Service.isConfigured()) {
+        const produto = await Produto.findById(id);
+        return res.render('produtos/edit', {
+          title: 'Editar Produto',
+          produto,
+          error: 'Configuração do S3 não encontrada. Configure as variáveis de ambiente do AWS S3.'
+        });
       }
+
+      if (req.file) {
+        // Se há uma nova imagem, deletar a antiga do S3 (se existir)
+        const produtoAtual = await Produto.findById(id);
+        if (produtoAtual && produtoAtual.imagem && produtoAtual.imagem.includes('s3')) {
+          await S3Service.deleteFile(produtoAtual.imagem);
+        }
+        
+        // Usar o serviço S3 para obter a URL do novo arquivo
+        imagem = S3Service.getFileUrl(req.file);
+      }
+
       // Validação básica
       if (!nome || !preco || !categoria) {
         const produto = await Produto.findById(id);
@@ -103,6 +136,7 @@ class ProdutoController {
           error: 'Nome, preço e categoria são obrigatórios'
         });
       }
+
       const success = await Produto.update(id, { nome, descricao, preco, categoria, estoque, imagem });
       if (success) {
         res.redirect('/produtos?message=Produto atualizado com sucesso!');
@@ -122,8 +156,15 @@ class ProdutoController {
   // Deletar produto
   static async delete(req, res) {
     try {
+      // Buscar o produto antes de deletar para pegar a URL da imagem
+      const produto = await Produto.findById(req.params.id);
+      
       const success = await Produto.delete(req.params.id);
       if (success) {
+        // Se o produto tinha uma imagem no S3, deletar também
+        if (produto && produto.imagem && produto.imagem.includes('s3')) {
+          await S3Service.deleteFile(produto.imagem);
+        }
         res.redirect('/produtos?message=Produto deletado com sucesso!');
       } else {
         res.redirect('/produtos?message=Produto não encontrado');
@@ -175,5 +216,5 @@ class ProdutoController {
 
 module.exports = {
   ProdutoController,
-  upload
+  uploadMulter
 }; 

@@ -17,7 +17,6 @@ const upload = multer({
   storage: multerS3({
     s3: s3Client,
     bucket: process.env.AWS_S3_BUCKET,
-    acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });
     },
@@ -62,7 +61,6 @@ class S3Service {
         Key: key,
         Body: fileBuffer,
         ContentType: contentType,
-        ACL: 'public-read',
       });
 
       await s3Client.send(command);

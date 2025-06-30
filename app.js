@@ -17,7 +17,21 @@ const limiter = rateLimit({
 });
 
 // Middleware de segurança
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://treinamento-arquiteturas.s3.sa-east-1.amazonaws.com"
+        ],
+        // Outras diretivas podem ser adicionadas conforme necessário
+      }
+    }
+  })
+);
 app.use(cors());
 app.use(limiter);
 

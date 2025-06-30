@@ -17,6 +17,7 @@ const upload = multer({
   storage: multerS3({
     s3: s3Client,
     bucket: process.env.AWS_S3_BUCKET,
+    acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });
     },
@@ -24,6 +25,9 @@ const upload = multer({
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const fileName = `produtos/${uniqueSuffix}-${file.originalname.replace(/\s+/g, '_')}`;
       cb(null, fileName);
+    },
+    contentType: function (req, file, cb) {
+      cb(null, file.mimetype);
     }
   }),
   limits: {

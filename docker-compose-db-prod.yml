@@ -37,11 +37,6 @@ services:
       - PMA_PORT=3306
       - PMA_USER=root
       - PMA_PASSWORD=password
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
-      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
-      - AWS_S3_BUCKET_URL=${AWS_S3_BUCKET_URL}
     depends_on:
       mysql:
         condition: service_healthy

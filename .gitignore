@@ -9,6 +9,8 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 
+run.sh
+
 # macOS
 .DS_Store
 .AppleDouble

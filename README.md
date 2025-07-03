@@ -83,7 +83,8 @@ Uma aplicação web completa para cadastro e gerenciamento de produtos, desenvol
    npm run dev
    ```
 
-## 📁 Estrutura do Projeto```
+## 📁 Estrutura do Projeto
+```
 produtos-app/
 ├── app.js                 # Arquivo principal da aplicação
 ├── package.json           # Dependências e scripts

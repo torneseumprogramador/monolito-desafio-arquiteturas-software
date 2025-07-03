@@ -5,10 +5,28 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const helpers = require('./helpers/handlebars');
+const redisService = require('./services/RedisService');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Inicializar Redis
+async function initializeRedis() {
+  if (redisService.isConfigured()) {
+    try {
+      await redisService.connect();
+      console.log('Redis conectado com sucesso');
+    } catch (error) {
+      console.error('Erro ao conectar com Redis:', error);
+    }
+  } else {
+    console.log('Redis não configurado - cache desabilitado');
+  }
+}
+
+// Inicializar Redis na startup
+initializeRedis();
 
 // Configuração do rate limiting
 const limiter = rateLimit({

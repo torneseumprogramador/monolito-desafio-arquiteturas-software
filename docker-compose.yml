@@ -16,8 +16,15 @@ services:
       - AWS_REGION=${AWS_REGION}
       - AWS_S3_BUCKET=${AWS_S3_BUCKET}
       - AWS_S3_BUCKET_URL=${AWS_S3_BUCKET_URL}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DB=0
+      - REDIS_CACHE_TTL=60
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     volumes:
       - ./uploads:/app/uploads
@@ -53,6 +60,25 @@ services:
       interval: 10s
       start_period: 30s
 
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 5s
+      retries: 5
+      interval: 10s
+      start_period: 10s
+
   # phpMyAdmin (opcional - para gerenciar o banco)
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -72,6 +98,7 @@ services:
 
 volumes:
   mysql_data:
+  redis_data:
 
 networks:
   app-network:

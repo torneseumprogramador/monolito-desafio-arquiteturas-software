@@ -1,5 +1,6 @@
 const Produto = require('../models/Produto');
 const { S3Service, upload } = require('../services/S3Service');
+const redisService = require('../services/RedisService');
 const path = require('path');
 const fs = require('fs');
 
@@ -20,7 +21,25 @@ class ProdutoController {
   // Listar todos os produtos
   static async index(req, res) {
     try {
-      const produtos = await Produto.findAll();
+      const cacheKey = 'produtos:lista';
+      const cacheTTL = parseInt(process.env.REDIS_CACHE_TTL) || 60; // 1 minuto por padrão
+      
+      // Tentar buscar do cache primeiro
+      let produtos = null;
+      if (redisService.isConfigured()) {
+        produtos = await redisService.get(cacheKey);
+      }
+      
+      // Se não encontrou no cache, buscar do banco
+      if (!produtos) {
+        produtos = await Produto.findAll();
+        
+        // Salvar no cache se o Redis estiver configurado
+        if (redisService.isConfigured()) {
+          await redisService.set(cacheKey, produtos, cacheTTL);
+        }
+      }
+      
       res.render('produtos/index', { 
         produtos,
         title: 'Lista de Produtos',
@@ -72,6 +91,12 @@ class ProdutoController {
       }
 
       await Produto.create({ nome, descricao, preco, categoria, estoque, imagem });
+      
+      // Invalidar cache após criar novo produto
+      if (redisService.isConfigured()) {
+        await redisService.del('produtos:lista');
+      }
+      
       res.redirect('/produtos?message=Produto criado com sucesso!');
     } catch (error) {
       res.render('produtos/create', {
@@ -139,6 +164,10 @@ class ProdutoController {
 
       const success = await Produto.update(id, { nome, descricao, preco, categoria, estoque, imagem });
       if (success) {
+        // Invalidar cache após atualizar produto
+        if (redisService.isConfigured()) {
+          await redisService.del('produtos:lista');
+        }
         res.redirect('/produtos?message=Produto atualizado com sucesso!');
       } else {
         res.redirect('/produtos?message=Produto não encontrado');
@@ -165,6 +194,12 @@ class ProdutoController {
         if (produto && produto.imagem && produto.imagem.includes('s3')) {
           await S3Service.deleteFile(produto.imagem);
         }
+        
+        // Invalidar cache após deletar produto
+        if (redisService.isConfigured()) {
+          await redisService.del('produtos:lista');
+        }
+        
         res.redirect('/produtos?message=Produto deletado com sucesso!');
       } else {
         res.redirect('/produtos?message=Produto não encontrado');

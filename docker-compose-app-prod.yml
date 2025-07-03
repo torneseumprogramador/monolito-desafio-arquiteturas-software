@@ -19,7 +19,6 @@ services:
       - AWS_S3_BUCKET_URL=${AWS_S3_BUCKET_URL}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_DB=0
       - REDIS_CACHE_TTL=60
     volumes:

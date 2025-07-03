@@ -8,11 +8,22 @@ class RedisService {
 
   async connect() {
     try {
+      console.log('🔍 Tentando conectar com Redis...');
+      console.log('📋 Configurações:', {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: process.env.REDIS_PORT || 6379,
+        db: process.env.REDIS_DB || 0
+      });
+      
       this.client = redis.createClient({
         host: process.env.REDIS_HOST || 'localhost',
         port: process.env.REDIS_PORT || 6379,
-        password: process.env.REDIS_PASSWORD || undefined,
         db: process.env.REDIS_DB || 0,
+        socket: {
+          family: 4, // Forçar IPv4
+          connectTimeout: 10000,
+          lazyConnect: true
+        },
         retry_strategy: (options) => {
           if (options.error && options.error.code === 'ECONNREFUSED') {
             console.log('Redis server refused connection');

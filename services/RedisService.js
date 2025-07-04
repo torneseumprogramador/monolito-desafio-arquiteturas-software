@@ -12,12 +12,7 @@ class RedisService {
       const redisPort = parseInt(process.env.REDIS_PORT) || 6379;
       const redisDb = parseInt(process.env.REDIS_DB) || 0;
       
-      console.log('🔍 Tentando conectar com Redis...');
-      console.log('📋 Configurações:', {
-        host: redisHost,
-        port: redisPort,
-        db: redisDb
-      });
+      console.log('🔍 Conectando ao Redis:', `${redisHost}:${redisPort}`);
       
       // Configuração para Redis v4+
       this.client = redis.createClient({
@@ -47,29 +42,30 @@ class RedisService {
       });
 
       this.client.on('error', (err) => {
-        console.error('Redis Client Error:', err);
+        console.error('❌ Redis Error:', err.message);
         this.isConnected = false;
       });
 
       this.client.on('connect', () => {
-        console.log('Redis Client Connected');
+        console.log('✅ Redis conectado');
         this.isConnected = true;
       });
 
       this.client.on('ready', () => {
-        console.log('Redis Client Ready');
+        console.log('✅ Redis pronto');
         this.isConnected = true;
       });
 
       this.client.on('end', () => {
-        console.log('Redis Client Disconnected');
+        console.log('🔌 Redis desconectado');
         this.isConnected = false;
       });
 
       await this.client.connect();
+      console.log('✅ Redis inicializado com sucesso');
       return true;
     } catch (error) {
-      console.error('Erro ao conectar com Redis:', error);
+      console.error('❌ Erro ao conectar com Redis:', error.message);
       this.isConnected = false;
       return false;
     }
@@ -143,11 +139,7 @@ class RedisService {
   }
 
   isConfigured() {
-    const hasConfig = process.env.REDIS_HOST && process.env.REDIS_PORT;
-    console.log('🔍 Redis configurado?', hasConfig);
-    console.log('📋 REDIS_HOST:', process.env.REDIS_HOST);
-    console.log('📋 REDIS_PORT:', process.env.REDIS_PORT);
-    return hasConfig;
+    return process.env.REDIS_HOST && process.env.REDIS_PORT;
   }
 }
 

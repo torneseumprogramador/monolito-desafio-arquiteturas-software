@@ -8,7 +8,8 @@
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "configure-s3": "node scripts/configure-s3.js",
-    "test-redis": "node scripts/test-redis.js"
+    "test-redis": "node scripts/test-redis.js",
+    "test-redis-connection": "node scripts/test-redis-connection.js"
   },
   "keywords": [
     "node",

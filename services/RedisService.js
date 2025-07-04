@@ -8,22 +8,27 @@ class RedisService {
 
   async connect() {
     try {
+      const redisHost = process.env.REDIS_HOST || 'localhost';
+      const redisPort = parseInt(process.env.REDIS_PORT) || 6379;
+      const redisDb = parseInt(process.env.REDIS_DB) || 0;
+      
       console.log('🔍 Tentando conectar com Redis...');
       console.log('📋 Configurações:', {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379,
-        db: process.env.REDIS_DB || 0
+        host: redisHost,
+        port: redisPort,
+        db: redisDb
       });
       
+      // Configuração para Redis v4+
       this.client = redis.createClient({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379,
-        db: process.env.REDIS_DB || 0,
         socket: {
+          host: redisHost,
+          port: redisPort,
           family: 4, // Forçar IPv4
           connectTimeout: 10000,
           lazyConnect: true
         },
+        database: redisDb,
         retry_strategy: (options) => {
           if (options.error && options.error.code === 'ECONNREFUSED') {
             console.log('Redis server refused connection');
@@ -138,7 +143,11 @@ class RedisService {
   }
 
   isConfigured() {
-    return process.env.REDIS_HOST && process.env.REDIS_PORT;
+    const hasConfig = process.env.REDIS_HOST && process.env.REDIS_PORT;
+    console.log('🔍 Redis configurado?', hasConfig);
+    console.log('📋 REDIS_HOST:', process.env.REDIS_HOST);
+    console.log('📋 REDIS_PORT:', process.env.REDIS_PORT);
+    return hasConfig;
   }
 }
 

@@ -1,30 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { ProdutoController } = require('../controllers/ProdutoController');
-const { upload } = require('../services/S3Service');
+const { ProdutoController, uploadMulter } = require('../controllers/ProdutoController');
+
+// Criar instância do controller
+const produtoController = new ProdutoController();
 
 // Rota principal - listar produtos
-router.get('/', ProdutoController.index);
+router.get('/', (req, res) => produtoController.index(req, res));
 
 // Rota para busca
-router.get('/search', ProdutoController.search);
+router.get('/search', (req, res) => produtoController.search(req, res));
 
 // Rota para mostrar formulário de criação
-router.get('/create', ProdutoController.createForm);
+router.get('/create', (req, res) => produtoController.createForm(req, res));
 
 // Rota para criar produto (com upload para S3)
-router.post('/', upload.single('imagem'), ProdutoController.create);
+router.post('/', uploadMulter.single('imagem'), (req, res) => produtoController.create(req, res));
 
 // Rota para mostrar detalhes do produto
-router.get('/:id', ProdutoController.show);
+router.get('/:id', (req, res) => produtoController.show(req, res));
 
 // Rota para mostrar formulário de edição
-router.get('/:id/edit', ProdutoController.editForm);
+router.get('/:id/edit', (req, res) => produtoController.editForm(req, res));
 
 // Rota para atualizar produto (com upload para S3)
-router.post('/:id', upload.single('imagem'), ProdutoController.update);
+router.post('/:id', uploadMulter.single('imagem'), (req, res) => produtoController.update(req, res));
 
 // Rota para deletar produto
-router.post('/:id/delete', ProdutoController.delete);
+router.post('/:id/delete', (req, res) => produtoController.delete(req, res));
 
 module.exports = router; 

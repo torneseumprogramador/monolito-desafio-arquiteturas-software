@@ -1,8 +1,6 @@
-const Produto = require('../models/Produto');
+const ProdutoService = require('../services/ProdutoService');
 const { S3Service, upload } = require('../services/S3Service');
-const redisService = require('../services/RedisService');
 const path = require('path');
-const fs = require('fs');
 
 // Configuração do multer
 const multer = require('multer');
@@ -18,27 +16,14 @@ const storage = multer.diskStorage({
 const uploadMulter = multer({ storage: storage });
 
 class ProdutoController {
+  constructor() {
+    this.produtoService = new ProdutoService();
+  }
+
   // Listar todos os produtos
-  static async index(req, res) {
+  async index(req, res) {
     try {
-      const cacheKey = 'produtos:lista';
-      const cacheTTL = parseInt(process.env.REDIS_CACHE_TTL) || 60; // 1 minuto por padrão
-      
-      // Tentar buscar do cache primeiro
-      let produtos = null;
-      if (redisService.isConfigured()) {
-        produtos = await redisService.get(cacheKey);
-      }
-      
-      // Se não encontrou no cache, buscar do banco
-      if (!produtos) {
-        produtos = await Produto.findAll();
-        
-        // Salvar no cache se o Redis estiver configurado
-        if (redisService.isConfigured()) {
-          await redisService.set(cacheKey, produtos, cacheTTL);
-        }
-      }
+      const produtos = await this.produtoService.listarProdutos();
       
       res.render('produtos/index', { 
         produtos,
@@ -54,7 +39,7 @@ class ProdutoController {
   }
 
   // Mostrar formulário de criação
-  static createForm(req, res) {
+  createForm(req, res) {
     res.render('produtos/create', { 
       title: 'Novo Produto',
       produto: {}
@@ -62,40 +47,16 @@ class ProdutoController {
   }
 
   // Criar novo produto
-  static async create(req, res) {
+  async create(req, res) {
     try {
       const { nome, descricao, preco, categoria, estoque } = req.body;
-      let imagem = null;
-      
-      // Verificar se o S3 está configurado
-      if (!S3Service.isConfigured()) {
-        return res.render('produtos/create', {
-          title: 'Novo Produto',
-          produto: req.body,
-          error: 'Configuração do S3 não encontrada. Configure as variáveis de ambiente do AWS S3.'
-        });
-      }
+      let produtoData = { nome, descricao, preco, categoria, estoque };
 
       if (req.file) {
-        // Usar o serviço S3 para obter a URL do arquivo
-        imagem = S3Service.getFileUrl(req.file);
+        produtoData.imagem = req.file;
       }
 
-      // Validação básica
-      if (!nome || !preco || !categoria) {
-        return res.render('produtos/create', {
-          title: 'Novo Produto',
-          produto: req.body,
-          error: 'Nome, preço e categoria são obrigatórios'
-        });
-      }
-
-      await Produto.create({ nome, descricao, preco, categoria, estoque, imagem });
-      
-      // Invalidar cache após criar novo produto
-      if (redisService.isConfigured()) {
-        await redisService.del('produtos:lista');
-      }
+      await this.produtoService.criarProduto(produtoData);
       
       res.redirect('/produtos?message=Produto criado com sucesso!');
     } catch (error) {
@@ -108,12 +69,9 @@ class ProdutoController {
   }
 
   // Mostrar formulário de edição
-  static async editForm(req, res) {
+  async editForm(req, res) {
     try {
-      const produto = await Produto.findById(req.params.id);
-      if (!produto) {
-        return res.redirect('/produtos?message=Produto não encontrado');
-      }
+      const produto = await this.produtoService.buscarProdutoPorId(req.params.id);
       
       res.render('produtos/edit', { 
         title: 'Editar Produto',
@@ -125,99 +83,52 @@ class ProdutoController {
   }
 
   // Atualizar produto
-  static async update(req, res) {
+  async update(req, res) {
     try {
       const { nome, descricao, preco, categoria, estoque } = req.body;
       const id = req.params.id;
-      let imagem = null;
-
-      // Verificar se o S3 está configurado
-      if (!S3Service.isConfigured()) {
-        const produto = await Produto.findById(id);
-        return res.render('produtos/edit', {
-          title: 'Editar Produto',
-          produto,
-          error: 'Configuração do S3 não encontrada. Configure as variáveis de ambiente do AWS S3.'
-        });
-      }
+      let produtoData = { nome, descricao, preco, categoria, estoque };
 
       if (req.file) {
-        // Se há uma nova imagem, deletar a antiga do S3 (se existir)
-        const produtoAtual = await Produto.findById(id);
-        if (produtoAtual && produtoAtual.imagem && produtoAtual.imagem.includes('s3')) {
-          await S3Service.deleteFile(produtoAtual.imagem);
-        }
-        
-        // Usar o serviço S3 para obter a URL do novo arquivo
-        imagem = S3Service.getFileUrl(req.file);
+        produtoData.imagem = req.file;
       }
 
-      // Validação básica
-      if (!nome || !preco || !categoria) {
-        const produto = await Produto.findById(id);
-        return res.render('produtos/edit', {
+      await this.produtoService.atualizarProduto(id, produtoData);
+      
+      res.redirect('/produtos?message=Produto atualizado com sucesso!');
+    } catch (error) {
+      try {
+        const produto = await this.produtoService.buscarProdutoPorId(req.params.id);
+        res.render('produtos/edit', {
           title: 'Editar Produto',
           produto,
-          error: 'Nome, preço e categoria são obrigatórios'
+          error: error.message
         });
-      }
-
-      const success = await Produto.update(id, { nome, descricao, preco, categoria, estoque, imagem });
-      if (success) {
-        // Invalidar cache após atualizar produto
-        if (redisService.isConfigured()) {
-          await redisService.del('produtos:lista');
-        }
-        res.redirect('/produtos?message=Produto atualizado com sucesso!');
-      } else {
+      } catch (findError) {
         res.redirect('/produtos?message=Produto não encontrado');
       }
-    } catch (error) {
-      const produto = await Produto.findById(req.params.id);
-      res.render('produtos/edit', {
-        title: 'Editar Produto',
-        produto,
-        error: error.message
-      });
     }
   }
 
   // Deletar produto
-  static async delete(req, res) {
+  async delete(req, res) {
     try {
-      // Buscar o produto antes de deletar para pegar a URL da imagem
-      const produto = await Produto.findById(req.params.id);
-      
-      const success = await Produto.delete(req.params.id);
-      if (success) {
-        // Se o produto tinha uma imagem no S3, deletar também
-        if (produto && produto.imagem && produto.imagem.includes('s3')) {
-          await S3Service.deleteFile(produto.imagem);
-        }
-        
-        // Invalidar cache após deletar produto
-        if (redisService.isConfigured()) {
-          await redisService.del('produtos:lista');
-        }
-        
-        res.redirect('/produtos?message=Produto deletado com sucesso!');
-      } else {
-        res.redirect('/produtos?message=Produto não encontrado');
-      }
+      await this.produtoService.deletarProduto(req.params.id);
+      res.redirect('/produtos?message=Produto deletado com sucesso!');
     } catch (error) {
       res.redirect('/produtos?message=Erro ao deletar produto');
     }
   }
 
   // Buscar produtos
-  static async search(req, res) {
+  async search(req, res) {
     try {
       const termo = req.query.q;
       if (!termo) {
         return res.redirect('/produtos');
       }
       
-      const produtos = await Produto.search(termo);
+      const produtos = await this.produtoService.buscarProdutos(termo);
       res.render('produtos/index', { 
         produtos,
         title: `Resultados para: ${termo}`,
@@ -232,12 +143,9 @@ class ProdutoController {
   }
 
   // Mostrar detalhes do produto
-  static async show(req, res) {
+  async show(req, res) {
     try {
-      const produto = await Produto.findById(req.params.id);
-      if (!produto) {
-        return res.redirect('/produtos?message=Produto não encontrado');
-      }
+      const produto = await this.produtoService.buscarProdutoPorId(req.params.id);
       
       res.render('produtos/show', { 
         title: produto.nome,

@@ -95,9 +95,15 @@ produtos-app/
 ├── config/
 │   └── database.js       # Configuração do banco de dados
 ├── controllers/
-│   └── ProdutoController.js # Lógica de negócio
-├── models/
-│   └── Produto.js        # Modelo de dados
+│   └── ProdutoController.js # Controladores HTTP
+├── entities/
+│   └── Produto.js        # Entidades de domínio
+├── repositories/
+│   └── ProdutoRepository.js # Acesso a dados
+├── services/
+│   ├── ProdutoService.js # Lógica de negócio
+│   ├── RedisService.js   # Cache Redis
+│   └── S3Service.js      # Upload S3
 ├── routes/
 │   └── produtos.js       # Definição das rotas
 ├── views/
